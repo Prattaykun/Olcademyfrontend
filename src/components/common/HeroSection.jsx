@@ -1,181 +1,99 @@
-import React, { useEffect, useState } from 'react';
-import Button from '../ui/Button';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const images = [
-  "/images/baner1.jpeg",
-  "/images/baner2.png",
-  "/images/baner3.jpeg",
-  "/images/Export3.png",
-];
-
-const HeroSection = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+const HeroSection = ({
+  title = 'Unveil Your Signature Scent',
+  subtitle = 'A fragrance that transcends time, inspired by rare woods and eternal elegance.',
+  image = '/images/hero-default.png',
+  buttonText = 'Discover Collection',
+  onButtonClick,
+}) => {
+  const [searchValue, setSearchValue] = useState('');
+  const [heroImage, setHeroImage] = useState(image || '/images/hero-default.png');
+  const [fallbackIndex, setFallbackIndex] = useState(0);
   const navigate = useNavigate();
-  const INTERVAL_MS = 5000; // 5 seconds
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === images.length - 1 ? 0 : prevIndex + 1
-      );
-    }, INTERVAL_MS);
-    return () => clearTimeout(timer);
-  }, [currentIndex]);
+  const heroFallbacks = [image, '/images/hero-default.png', '/images/baner1.jpeg'].filter(Boolean);
 
-  const handleClick = () => {
-    navigate('/about-page');
+  React.useEffect(() => {
+    setFallbackIndex(0);
+    setHeroImage(heroFallbacks[0] || '/images/hero-default.png');
+  }, [image]);
+
+  const handleHeroImageError = () => {
+    const nextIndex = fallbackIndex + 1;
+    if (nextIndex < heroFallbacks.length) {
+      setFallbackIndex(nextIndex);
+      setHeroImage(heroFallbacks[nextIndex]);
+    }
   };
 
-  const handleClickDiscover = () => {
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (!searchValue.trim()) return;
+    navigate(`/search?q=${encodeURIComponent(searchValue.trim())}`);
+    setSearchValue('');
+  };
+
+  const handleShopNow = () => {
+    if (typeof onButtonClick === 'function') {
+      onButtonClick();
+      return;
+    }
     navigate('/discover-collection');
-  }
+  };
+
   return (
-    <section
-      className="w-full bg-[#F9F7F6]"
-      style={{
-        minHeight: '0',
-        width: '100%',
-      }}
-    >
-      {/* Unified hero with image + overlay + content */}
-      <div
-        className="relative w-full max-w-[1728px] mx-auto"
-        style={{
-          height: '380px',
-          width: '100%'
-        }}
-      >
-        {/* Background image (carousel) with crossfade */}
-        <div className="absolute inset-0 w-full h-full">
-          {images.map((src, idx) => (
-            <img
-              key={src}
-              src={src}
-              alt={`Banner ${idx + 1}`}
-              className="absolute inset-0 w-full h-full"
-              style={{
-                objectFit: 'cover',
-                display: 'block',
-                transition: 'opacity 900ms ease-in-out',
-                opacity: currentIndex === idx ? 1 : 0
-              }}
-            />
-          ))}
+    <section className="w-full bg-[#F1F0ED]">
+      <div className="w-full max-w-[1512px] mx-auto grid grid-cols-1 lg:grid-cols-[58%_42%] min-h-[772px]">
+        <div className="px-6 sm:px-10 lg:px-16 pt-16 lg:pt-28 pb-12 flex flex-col">
+          <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-3 sm:gap-2 items-stretch sm:items-center w-full max-w-[872px]">
+            <div className="flex-1 h-14 px-4 rounded-md border border-[#5A514A] bg-[#F4F3F0] flex items-center gap-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3D3732" strokeWidth="2">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
+              </svg>
+              <input
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                placeholder="Search Perfume, Fragrance"
+                className="w-full bg-transparent outline-none text-[#2A2420] text-base"
+              />
+            </div>
+            <button
+              type="submit"
+              className="h-14 px-8 rounded-md bg-[#D4AF37] text-[#2A2420] text-lg font-medium uppercase tracking-wide"
+            >
+              Search
+            </button>
+          </form>
+
+          <div className="mt-10 max-w-[740px]">
+            <h1 className="text-[48px] sm:text-[58px] lg:text-[64px] leading-[1.12] font-[Playfair_Display] text-[#2A2420]">
+              {title}
+            </h1>
+            <p className="mt-5 text-[22px] sm:text-[24px] leading-[1.45] text-[#3E3832] font-[Inter]">
+              {subtitle}
+            </p>
+            <button
+              onClick={handleShopNow}
+              className="mt-8 h-14 px-10 rounded-md bg-[#D4AF37] text-[#2A2420] text-lg font-medium uppercase tracking-wide"
+            >
+              {buttonText}
+            </button>
+          </div>
         </div>
 
-        {/* Gradient overlay covering the whole image */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(262.47deg, rgba(0, 0, 0, 0.10) 32.56%, #000000 53.91%)',
-            opacity: 0.69,
-            zIndex: 1
-          }}
-        />
-
-        {/* Left-aligned content */}
-        <div
-          className="absolute flex flex-col items-start justify-center"
-          style={{ left: '63px', top: '100px', width: '640px', gap: '16px', zIndex: 2 }}
-        >
-          <h1
-            className="font-[Playfair] font-bold"
-            style={{
-              fontSize: '36px',
-              lineHeight: '120%',
-              color: '#FFFFFF',
-              textAlign: 'left',
-              margin: '0'
-            }}
-          >
-            Crafted in Paris. Defined by You
-          </h1>
-
-          <p
-            className="font-[Manrope] font-normal"
-            style={{
-              fontSize: '14px',
-              lineHeight: '150%',
-              color: '#F9F7F6',
-              textAlign: 'left',
-              marginTop: '0',
-              marginBottom: '0',
-              textShadow: '0 1px 8px rgba(0,0,0,0.25)'
-            }}
-          >
-            A fragrance that transcends time, inspired by rare woods and eternal elegance.
-          </p>
-
-          <div
-            className="flex items-start"
-            style={{
-              gap: '12px',
-              marginTop: '0',
-              height: '36px'
-            }}
-          >
-            <button
-              onClick={handleClickDiscover}
-              className="font-[Manrope] font-normal uppercase"
-              style={{
-                width: '160px',
-                height: '36px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                background: '#CDAF6E',
-                color: '#341405',
-                fontSize: '12px',
-                lineHeight: '150%',
-                letterSpacing: '0%',
-                border: '1px solid #EFDB94',
-                borderRadius: '0px',
-                paddingTop: '8px',
-                paddingBottom: '8px',
-                paddingLeft: '16px',
-                paddingRight: '16px',
-                whiteSpace: 'nowrap',
-                boxSizing: 'border-box',
-                cursor: 'pointer',
-                gap: '8px'
-              }}
-            >
-              DISCOVER COLLECTIONS
-            </button>
-            {/* <button
-              onClick={handleClick}
-              className="font-[Manrope] font-normal uppercase"
-              style={{
-                width: '170px',
-                height: '44px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                background: 'transparent',
-                color: '#F9F7F6',
-                fontSize: '15px',
-                lineHeight: '150%',
-                letterSpacing: '0%',
-                border: '1px solid #EFDB94',
-                borderRadius: '0px',
-                paddingTop: '12px',
-                paddingBottom: '12px',
-                paddingLeft: '24px',
-                paddingRight: '24px',
-                whiteSpace: 'nowrap',
-                boxSizing: 'border-box',
-                cursor: 'pointer',
-                gap: '8px'
-              }}
-            >
-              EXPLORE ABOUT US
-            </button> */}
-          </div>
+        <div className="h-[420px] lg:h-auto">
+          <img
+            src={heroImage}
+            alt="Hero"
+            className="w-full h-full object-cover"
+            onError={handleHeroImageError}
+          />
         </div>
       </div>
     </section>
-
   );
 };
 

@@ -71,6 +71,13 @@ const HomePage = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const uiTheme = {
+    pageBg: '#F1F0ED',
+    ink: '#2A2420',
+    muted: '#5F5953',
+    border: '#D5D0C8',
+    amber: '#D4AF37'
+  };
 
   // Toggle section expansion - MEMOIZED
   const toggleSection = useCallback((sectionKey) => {
@@ -384,6 +391,11 @@ const HomePage = () => {
 
     if (!product) return null;
 
+    const currentPrice = Number(product.price) || 0;
+    const comparePrice = Number(product.originalPrice || product.compareAtPrice || 0);
+    const hasComparePrice = comparePrice > currentPrice;
+    const ratingValue = typeof product.rating === 'number' ? product.rating.toFixed(1) : null;
+
     const productInCart = isInCart(product._id?.toString(), product.sizes && product.sizes.length > 0 ? product.sizes[0].size : null);
 
     const handleAddToCart = async (e) => {
@@ -474,99 +486,87 @@ const HomePage = () => {
         layout
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -8, boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }}
+        whileHover={{ y: -5, boxShadow: '0 12px 30px rgba(0,0,0,0.16)' }}
         transition={{ duration: 0.3 }}
-        className="bg-white dark:bg-gray-800 overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 w-full max-w-[290px] min-h-0 sm:min-h-[420px]"
-        style={{ height: 'auto' }}
+        className="bg-white cursor-pointer transition-all duration-300 w-full max-w-[288px] h-[384px] p-5 rounded-lg shadow-[0px_1.12px_4.48px_0px_rgba(0,0,0,0.25)] flex flex-col justify-start"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleCardClick}
       >
-        {/* Image Container with Wishlist Icon - RESPONSIVE */}
-        <div className="relative bg-white dark:bg-gray-700 flex items-center justify-center overflow-hidden w-full aspect-[290/240] p-3">
-          <motion.img
-            src={getProductImage()}
-            alt={product.name || 'Product'}
-            className="object-contain w-full h-full max-w-[220px] max-h-[220px]"
-            onError={(e) => handleImageError(e, isHovered ? 'hover' : 'primary')}
-            animate={{ scale: isHovered ? 1.08 : 1 }}
-            transition={{ duration: 0.4 }}
-            loading="lazy"
-          />
-
-          {/* Wishlist Heart Icon */}
+        <div className="w-full flex justify-end mb-1">
           <motion.button
             onClick={handleWishlistToggle}
-            whileHover={{ scale: 1.15 }}
-            whileTap={{ scale: 0.9 }}
-            className="absolute top-2.5 right-2.5 bg-white dark:bg-gray-800 p-1.5 transition-all duration-200 z-10 w-[27px] h-[27px] flex items-center justify-center"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.92 }}
+            className="w-5 h-5 flex items-center justify-center"
             aria-label={isInWishlist(product._id) ? 'Remove from wishlist' : 'Add to wishlist'}
           >
             <FiHeart
               size={14}
-              className={`transition-all duration-200 ${isInWishlist(product._id) ? 'fill-red-600 text-red-600' : 'text-gray-700 dark:text-gray-300'}`}
+              className={`transition-all duration-200 ${isInWishlist(product._id) ? 'fill-red-600 text-red-600' : 'text-[#2A2420]'}`}
             />
           </motion.button>
         </div>
 
-        {/* Product Info Container - RESPONSIVE */}
-        <div className="px-3 py-3 flex flex-col gap-2.5">
-          {/* Product Name */}
-          <h3
-            className="font-bold uppercase text-center line-clamp-2 text-base sm:text-lg"
-            style={{
-              fontFamily: 'Playfair Display, serif',
-              letterSpacing: '0.05em',
-              color: '#5A2408'
-            }}
-          >
-            {product.name || 'Product'}
-          </h3>
+        <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden min-h-0">
+          <motion.img
+            src={getProductImage()}
+            alt={product.name || 'Product'}
+            className="object-contain w-full h-full"
+            onError={(e) => handleImageError(e, isHovered ? 'hover' : 'primary')}
+            animate={{ scale: isHovered ? 1.05 : 1 }}
+            transition={{ duration: 0.4 }}
+            loading="lazy"
+          />
+        </div>
 
-          {/* Rating */}
-          <div className="flex items-center justify-center gap-1">
-            {product.rating ? (
-              <>
-                {[...Array(5)].map((_, index) => (
-                  <Star
-                    key={index}
-                    size={12}
-                    style={{ color: '#5A2408', fill: index < Math.floor(product.rating) ? '#5A2408' : 'transparent' }}
-                    className={`${index < Math.floor(product.rating) ? '' : 'opacity-30'}`}
-                  />
-                ))}
-              </>
-            ) : (
-              <div className="h-3"></div>
-            )}
+        <div className="w-full mt-2 flex flex-col gap-3.5">
+          <div className="w-full flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <h3
+                className="font-bold uppercase text-[20px] leading-6 tracking-wide truncate"
+                style={{
+                  fontFamily: 'Playfair Display, serif',
+                  color: uiTheme.ink
+                }}
+              >
+                {product.name || 'Oud Wood'}
+              </h3>
+              <div className="mt-1.5 flex items-center gap-2.5">
+                <span
+                  className="text-[18px] font-bold"
+                  style={{
+                    color: '#4A220A',
+                    fontFamily: 'Montserrat, Manrope, sans-serif'
+                  }}
+                >
+                  ${currentPrice.toFixed(2)}
+                </span>
+                {hasComparePrice && (
+                  <span
+                    className="text-base line-through"
+                    style={{
+                      color: '#A9A29A',
+                      fontFamily: 'Montserrat, Manrope, sans-serif'
+                    }}
+                  >
+                    ${comparePrice.toFixed(2)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <span
+                className="text-[18px] font-semibold"
+                style={{ color: '#8A5A22', fontFamily: 'Manrope, sans-serif' }}
+              >
+                {ratingValue || '4.2'}
+              </span>
+              <Star size={15} style={{ color: '#8A5A22', fill: '#8A5A22' }} />
+            </div>
           </div>
 
-          {/* Description */}
-          <p
-            className="text-center line-clamp-2 text-[10px] sm:text-xs"
-            style={{
-              fontFamily: 'Manrope, sans-serif',
-              fontWeight: '500',
-              letterSpacing: '0.02em',
-              color: '#7E513A'
-            }}
-          >
-            {product.description || 'Premium fragrance'}
-          </p>
-
-          {/* Price */}
-          <p
-            className="font-bold text-center text-sm sm:text-base"
-            style={{
-              fontFamily: 'Manrope, sans-serif',
-              letterSpacing: '0.02em',
-              color: '#431A06'
-            }}
-          >
-            ${typeof product.price === 'number' ? product.price.toFixed(2) : '0.00'}
-          </p>
-
-          {/* UPDATED Add to Cart Button */}
           <motion.button
             onClick={productInCart ? (e) => {
               e.stopPropagation();
@@ -575,16 +575,14 @@ const HomePage = () => {
             disabled={isAddingToCart}
             whileHover={{ scale: 1.02, opacity: 0.9 }}
             whileTap={{ scale: 0.98 }}
-            className="flex items-center justify-center gap-2 text-white font-bold uppercase transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed w-full h-[40px] sm:h-[45px] text-[10px] sm:text-xs md:text-sm -mx-3 px-3"
+            className="w-full h-12 px-3.5 bg-black rounded-md flex items-center justify-center gap-1.5 text-white uppercase disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
-              backgroundColor: productInCart ? '#431A06' : '#431A06',
-              fontFamily: 'Manrope, sans-serif',
-              letterSpacing: '0.05em',
-              width: 'calc(100% + 24px)'
+              fontFamily: 'Montserrat, Manrope, sans-serif',
+              letterSpacing: '0.04em'
             }}
           >
-            <ShoppingCart size={16} className="sm:w-[18px] sm:h-[18px]" />
-            <span>
+            <ShoppingCart size={16} />
+            <span className="text-base font-semibold">
               {isAddingToCart ? 'Adding...' : productInCart ? 'View Cart' : 'Add to Cart'}
             </span>
           </motion.button>
@@ -610,7 +608,7 @@ const HomePage = () => {
         darkMode={darkMode}
       />
     ) : (
-      <section className="py-10 sm:py-14 lg:py-16 px-4 sm:px-6 bg-[#F8F6F3] dark:bg-[#0d0603]">
+      <section className="py-10 sm:py-14 lg:py-16 px-4 sm:px-6" style={{ backgroundColor: uiTheme.pageBg }}>
         <div className="max-w-[1555px] mx-auto">
           {/* Section Title - RESPONSIVE */}
           <motion.h3
@@ -620,7 +618,7 @@ const HomePage = () => {
             className="text-center font-bold mb-6 sm:mb-8 lg:mb-10 text-2xl sm:text-3xl lg:text-4xl"
             style={{
               fontFamily: 'Playfair Display, serif',
-              color: darkMode ? '#f6d110' : '#271004'
+              color: uiTheme.ink
             }}
           >
             {title}
@@ -656,9 +654,9 @@ const HomePage = () => {
                     whileTap={{ scale: 0.98 }}
                     className="border-2 transition-all duration-300  w-full max-w-[250px] h-[40px] sm:h-[48px] px-5 flex items-center justify-center"
                     style={{
-                      borderColor: '#431A06',
-                      backgroundColor: 'transparent',
-                      color: '#431A06'
+                      borderColor: uiTheme.border,
+                      backgroundColor: '#EEEBE4',
+                      color: uiTheme.ink
                     }}
                   >
                     <span
@@ -728,42 +726,10 @@ const HomePage = () => {
           initial="hidden"
           whileInView="show"
           className="py-16 px-6"
-          style={{ backgroundColor: '#F9F7F6' }}
+          style={{ backgroundColor: uiTheme.pageBg }}
         >
-          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8 items-center">
-            <div className="text-left">
-              {banner.subtitle && (
-                <h3 className="text-lg text-[#79300f] font-semibold uppercase mb-3">
-                  {banner.subtitle}
-                </h3>
-              )}
-
-              <h2 className="text-[42px] font-dm-serif mb-6 text-black">
-                {banner.title} <br />
-                {banner.titleHighlight && (
-                  <span className="text-[#79300f]">{banner.titleHighlight}</span>
-                )}
-              </h2>
-              <p className="text-[18px] mb-6 text-[#5a2408] leading-relaxed">
-                {banner.description}
-              </p>
-
-              <button
-                onClick={handleClick}
-                className="bg-gradient-to-r from-[#431A06] to-[#5a2408] hover:from-[#431A06] hover:to-[#79300f] text-white px-8 py-3 text-lg font-semibold  transition-all duration-300 hover:shadow-lg transform hover:scale-105 flex items-center gap-3 w-fit"
-              >
-                <span>{banner.buttonText || 'Explore Collection'}</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div className="relative h-[400px]">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+            <div className="relative h-[560px] rounded-2xl overflow-hidden">
               <img
                 src={banner.image || '/images/newimg1.PNG'}
                 alt={banner.altText || banner.title}
@@ -773,6 +739,30 @@ const HomePage = () => {
                   e.target.src = '/images/newimg1.PNG';
                 }}
               />
+              <div className="absolute inset-0 bg-black/20" />
+              <div className="absolute left-7 bottom-7 text-white">
+                <h3 className="text-[52px] leading-[1.1] font-[Playfair_Display] max-w-[420px]">
+                  {banner.title || 'Soleil Blanc Oud Immortel'}
+                </h3>
+                <button className="mt-5 px-6 py-2 bg-white/90 text-black text-xs uppercase tracking-wider rounded">
+                  Shop Now
+                </button>
+              </div>
+            </div>
+
+            <div className="text-left">
+              <h2 className="text-5xl font-[Playfair_Display] mb-4" style={{ color: uiTheme.ink }}>
+                {banner.subtitle || 'Trending'}
+              </h2>
+              <p className="text-lg leading-8" style={{ color: uiTheme.muted }}>
+                {banner.description || 'Our most sought-after fragrances chosen by customers and loved for their character.'}
+              </p>
+              <button
+                onClick={handleClick}
+                className="mt-8 bg-[#171412] text-white px-10 py-3 uppercase tracking-wider"
+              >
+                {banner.buttonText || 'Explore'}
+              </button>
             </div>
           </div>
         </motion.section>
@@ -788,42 +778,10 @@ const HomePage = () => {
           initial="hidden"
           whileInView="show"
           className="py-16 px-6"
-          style={{ backgroundColor: '#F9F7F6' }}
+          style={{ backgroundColor: uiTheme.pageBg }}
         >
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div className="text-left">
-              {banner.subtitle && (
-                <h3 className="text-lg text-[#79300f] font-semibold uppercase mb-3">
-                  {banner.subtitle}
-                </h3>
-              )}
-
-              <h2 className="text-[42px] font-dm-serif mb-6 text-black">
-                {banner.title} <br />
-                {banner.titleHighlight && (
-                  <span className="text-[#79300f]">{banner.titleHighlight}</span>
-                )}
-              </h2>
-              <p className="text-[18px] mb-6 text-[#5a2408] leading-relaxed">
-                {banner.description}
-              </p>
-
-              <button
-                onClick={handleClick}
-                className="bg-gradient-to-r from-[#431A06] to-[#5a2408] hover:from-[#431A06] hover:to-[#79300f] text-white px-8 py-3 text-lg font-semibold transition-all duration-300 hover:shadow-lg transform hover:scale-105 flex items-center gap-3 w-fit"
-              >
-                <span>{banner.buttonText || 'View Collection'}</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div className="relative h-[400px]">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div className="relative h-[620px]">
               <img
                 src={banner.image || '/images/newimg1.PNG'}
                 alt={banner.altText || banner.title}
@@ -833,6 +791,30 @@ const HomePage = () => {
                   e.target.src = '/images/newimg1.PNG';
                 }}
               />
+              <div className="absolute -bottom-14 right-[-22px] bg-white border shadow-lg p-8 w-[250px]" style={{ borderColor: uiTheme.border }}>
+                <p className="text-[#8D6A14] text-3xl leading-none">&quot;</p>
+                <p className="mt-2 text-[#3E3934] text-[30px] leading-[1.3] font-[Noto_Serif]">
+                  &quot;Fragrance is the most intense form of memory.&quot;
+                </p>
+                <p className="mt-6 text-xs uppercase tracking-[0.16em] text-[#625D57]">Jean Paul G.</p>
+              </div>
+            </div>
+
+            <div className="text-left">
+              <p className="uppercase tracking-[0.14em] text-sm mb-3 text-[#8D6A14]">{banner.subtitle || 'The Experience'}</p>
+              <h2 className="text-[58px] leading-[1.08] font-[Playfair_Display] mb-5" style={{ color: uiTheme.ink }}>
+                {banner.title || 'A Scented Narrative for the Soul'}
+              </h2>
+              <p className="text-[18px] leading-8 mb-6" style={{ color: uiTheme.muted }}>
+                {banner.description || 'Each bottle is a chapter of a larger story. Visit our atelier to find your signature.'}
+              </p>
+              <button
+                onClick={handleClick}
+                className="pb-2 border-b uppercase tracking-[0.12em] text-sm"
+                style={{ color: '#8D6A14', borderColor: 'rgba(141,106,20,0.25)' }}
+              >
+                Discover our story
+              </button>
             </div>
           </div>
         </motion.section>
@@ -860,11 +842,11 @@ const HomePage = () => {
     if (!items.length) return null;
 
     return (
-      <section className="relative w-full py-4 sm:py-6 px-4 sm:px-6" style={{ backgroundColor: '#F9F7F6' }}>
+      <section className="relative w-full py-10 sm:py-12 px-4 sm:px-6" style={{ backgroundColor: uiTheme.pageBg }}>
         <div className="max-w-7xl mx-auto">
-          <div className="mb-2 sm:mb-4 text-center">
-            <h2 className="font-[Playfair] font-bold text-2xl sm:text-3xl md:text-[36px]" style={{ color: '#271004' }}>
-              Our Favorites
+          <div className="mb-5 sm:mb-6 text-center">
+            <h2 className="font-[Playfair_Display] font-semibold text-3xl sm:text-4xl md:text-[44px]" style={{ color: uiTheme.ink }}>
+              Our Collection
             </h2>
           </div>
 
@@ -1198,7 +1180,7 @@ const HomePage = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F9F7F6' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: uiTheme.pageBg }}>
       <Header />
       <NotificationSystem />
       <QuickViewModal />
@@ -1206,26 +1188,25 @@ const HomePage = () => {
       {/* CART SIDEBAR - ADD THIS */}
       <ProductCartSection isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
-      <main className="flex-1" style={{ backgroundColor: '#F9F7F6' }}>
+      <main className="flex-1" style={{ backgroundColor: uiTheme.pageBg }}>
         {/* HeroSection */}
-        {banners.hero &&
-          (isMobile ? (
-            <HeroSectionMobile />
-          ) : (
-            <HeroSection
-              title={banners.hero.title || 'Discover Luxury Gifts'}
-              subtitle={banners.hero.subtitle || 'Explore our exclusive collections'}
-              image={banners.hero.image || '/images/hero-default.jpg'}
-              buttonText="Shop Now"
-              onButtonClick={() => handleBannerClick(banners.hero)}
-            />
-          ))}
+        {isMobile ? (
+          <HeroSectionMobile />
+        ) : (
+          <HeroSection
+            title="Unveil Your Signature Scent"
+            subtitle="A fragrance that transcends time, inspired by rare woods and eternal elegance."
+            image={banners.hero?.image || '/images/hero-default.png'}
+            buttonText="Discover Collection"
+            onButtonClick={() => navigate('/discover-collection')}
+          />
+        )}
 
 
         {/* Best Sellers Carousel */}
-        {collections.best_seller_scents && collections.best_seller_scents.length > 0 && (
+        {/* {collections.best_seller_scents && collections.best_seller_scents.length > 0 && (
           <BestSellerCarousel products={collections.best_seller_scents} />
-        )}
+        )} */}
 
         {error && (
           <motion.div
@@ -1275,17 +1256,17 @@ const HomePage = () => {
           sectionKey="signature_collection"
         />
 
-        <section className="bg-gradient-to-br from-[#1C160C] via-[#1C160C] to-[#292218] py-20 px-6 ">
+        <section className="py-20 px-6" style={{ backgroundColor: '#E8E6E1' }}>
           <div className="max-w-3xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-[42px] md:text-[48px] font-dm-serif mb-4 bg-gradient-to-r from-[#CDAF6E] via-[#E4C77F] to-[#F5E6A1] bg-clip-text text-transparent leading-tight">
+              <h2 className="text-[50px] md:text-[56px] font-[Playfair_Display] mb-4 text-[#2A2420] leading-tight">
                 The Vesarii Inner Circle
               </h2>
-              <p className="text-[16px] mb-10 text-[#EFE9E6] leading-relaxed max-w-xl mx-auto">
+              <p className="text-[20px] mb-10 text-[#59544E] leading-relaxed max-w-2xl mx-auto">
                 Private access to rare editions, secret previews, and Parisian inspirations.
               </p>
             </motion.div>
@@ -1302,14 +1283,11 @@ const HomePage = () => {
                   placeholder="EMAIL"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="px-6 py-4 flex-1 outline-none border border-[#D4AF7A]/40 focus:border-[#D4AF7A] transition-all duration-300 bg-transparent
-    bg-gradient-to-br from-[#CDAF6E] via-[#E4C77F] to-[#F5E6A1] bg-clip-text text-transparent
-    placeholder:text-transparent placeholder:bg-gradient-to-br placeholder:from-[#CDAF6E] placeholder:via-[#E4C77F] placeholder:to-[#E4C77F] placeholder:bg-clip-text caret-[#D4AF7A]
-"
+                  className="px-6 py-4 flex-1 outline-none border border-[#CFC9C0] focus:border-[#B4AEA5] transition-all duration-300 bg-[#F4F2ED] text-[#2A2420] placeholder:text-[#6B655F]"
                 />
                 <Button
                   onClick={handleSubscribe}
-                  className="bg-gradient-to-br from-[#CDAF6E] via-[#E4C77F] to-[#F5E6A1]  px-6 py-2  font-bold text-sm  hover:bg-[#E4BF8A] transition-colors tracking-wider whitespace-nowrap font-[Manrope] !text-[#341405]"
+                  className="bg-[#2D312D] px-8 py-2 font-bold text-sm transition-colors tracking-wider whitespace-nowrap font-[Manrope] !text-[#F2F2EF]"
                 >
                   JOIN THE CIRCLE
                 </Button>
@@ -1327,13 +1305,13 @@ const HomePage = () => {
 
                 <label
                   htmlFor="acceptTerms"
-                  className="text-sm text-[#EFE9E6] cursor-pointer select-none"
+                  className="text-sm text-[#59544E] cursor-pointer select-none"
                 >
                   I agree to the Terms & Conditions
                 </label>
               </div>
 
-              <p className="text-[14px] text-[#EFE9E6]">
+              <p className="text-[14px] text-[#6B655F]">
                 By joining, you'll receive updates on limited editions and private events.
               </p>
             </motion.div>
