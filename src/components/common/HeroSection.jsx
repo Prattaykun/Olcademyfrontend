@@ -11,6 +11,7 @@ const HeroSection = ({
   const [searchValue, setSearchValue] = useState('');
   const [heroImage, setHeroImage] = useState(image || '/images/hero-default.png');
   const [fallbackIndex, setFallbackIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
 
   const heroFallbacks = [image, '/images/hero-default.png', '/images/baner1.jpeg'].filter(Boolean);
@@ -19,6 +20,13 @@ const HeroSection = ({
     setFallbackIndex(0);
     setHeroImage(heroFallbacks[0] || '/images/hero-default.png');
   }, [image]);
+
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleHeroImageError = () => {
     const nextIndex = fallbackIndex + 1;
@@ -86,7 +94,7 @@ const HeroSection = ({
 
         <div className="h-[420px] lg:h-auto">
           <img
-            src={heroImage}
+            src={isMobile ? '/images/hero-default.png' : heroImage}
             alt="Hero"
             className="w-full h-full object-cover"
             onError={handleHeroImageError}

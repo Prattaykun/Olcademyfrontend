@@ -16,79 +16,60 @@ const ProductHighlightMobile = ({ banner }) => {
 
   return (
     <motion.section
-      variants={fadeIn("up", 0.2)}
+      variants={fadeIn('up', 0.2)}
       initial="hidden"
       whileInView="show"
       viewport={{ once: true }}
-      className="py-10 px-4 bg-white"
+      className="px-4 py-8 bg-[#ECECEC]"
     >
-      <div className="max-w-md mx-auto">
-        {/* Top Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-dm-serif text-black uppercase tracking-wide">
-            {banner.sectionTitle}
-          </h2>
+      <div className="w-full flex flex-col justify-start items-start gap-8">
+        <div className="w-full rounded-2xl overflow-hidden relative">
+          <img
+            className="w-full h-[364px] object-cover"
+            src={banner?.image || '/images/newimg1.PNG'}
+            alt={banner?.altText || banner?.title || 'Trending'}
+            onError={(e) => {
+              e.target.src = '/images/newimg1.PNG';
+            }}
+          />
+
+          <div className="absolute left-7 top-10 text-white text-xl font-semibold leading-6" style={{ fontFamily: 'Playfair Display, serif' }}>
+            {banner?.title || 'Soleil Blanc Oud Immortel'}
+          </div>
 
           <button
             onClick={handleClick}
-            className="text-[#431A06] text-sm font-medium border-b border-[#431A06] pb-0.5"
+            className="absolute right-7 bottom-7 w-36 h-12 p-2 bg-white rounded-[1px] inline-flex justify-center items-center"
           >
-            {banner.viewAllText || "View All"}
+            <span className="text-black text-sm font-medium uppercase leading-5" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Shop Now
+            </span>
           </button>
         </div>
 
-        {/* Content Card - Vertical Stack */}
-        <div className="flex flex-col gap-6">
-          {/* Image */}
-          <div className="w-full h-[320px] shadow-lg rounded-sm overflow-hidden">
-            <img
-              src={banner.image || "/images/newimg1.PNG"}
-              alt={banner.altText || banner.title}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.src = "/images/newimg1.PNG";
-              }}
-            />
-          </div>
-
-          {/* Text */}
-          <div className="w-full space-y-4 text-center">
-            <h3 className="text-3xl font-dm-serif text-black leading-tight">
-              {banner.title}
+        <div className="w-full flex flex-col justify-start items-end gap-8">
+          <div className="w-full flex flex-col justify-start items-start gap-3">
+            <h3 className="w-full text-stone-900 text-2xl font-semibold leading-9" style={{ fontFamily: 'Playfair Display, serif' }}>
+              {banner?.subtitle || 'Trending'}
             </h3>
-
-            {banner.description && (
-              <p className="text-base text-[#5a2408] leading-relaxed">
-                {banner.description}
+            <div className="w-full flex flex-col justify-start items-start gap-2">
+              <p className="w-full opacity-80 text-neutral-600 text-base font-normal tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                {banner?.description || 'Our most sought-after fragrances chosen by our customers and selected for their character.'}
               </p>
-            )}
-
-            <div className="flex justify-center pt-2">
-              <button
-                onClick={handleClick}
-                className="bg-[#431A06] text-white
-                           px-6 py-3 text-sm font-semibold
-                           uppercase tracking-widest
-                           flex items-center gap-2
-                           shadow-md active:scale-95 transition-all"
-              >
-                <span>{banner.buttonText || "Explore"}</span>
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
+              <p className="w-full opacity-80 text-neutral-600 text-base font-normal tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                Our most sought-after fragrances selected by you.
+              </p>
             </div>
           </div>
+
+          <button
+            onClick={handleClick}
+            className="w-40 h-14 p-3.5 bg-stone-950 rounded inline-flex justify-center items-center"
+          >
+            <span className="text-white text-sm font-medium uppercase leading-5" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {banner?.buttonText || 'Explore'}
+            </span>
+          </button>
         </div>
       </div>
     </motion.section>

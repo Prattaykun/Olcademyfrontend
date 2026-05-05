@@ -606,6 +606,7 @@ const HomePage = () => {
         title={title}
         products={products}
         darkMode={darkMode}
+        addNotification={addNotification}
       />
     ) : (
       <section className="py-10 sm:py-14 lg:py-16 px-4 sm:px-6" style={{ backgroundColor: uiTheme.pageBg }}>
@@ -1256,7 +1257,7 @@ const HomePage = () => {
           sectionKey="signature_collection"
         />
 
-        <section className="py-20 px-6" style={{ backgroundColor: '#E8E6E1' }}>
+        <section className="hidden md:block py-20 px-6" style={{ backgroundColor: '#E8E6E1' }}>
           <div className="max-w-3xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}

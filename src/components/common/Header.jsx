@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { FiMenu, FiSearch, FiX, FiUser, FiShoppingCart, FiHeart, FiHome } from 'react-icons/fi';
+import { FiMenu, FiSearch, FiX, FiUser, FiShoppingCart, FiHeart } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import SignupModal from './SignupModal';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -123,7 +123,7 @@ const Header = ({ darkMode, setDarkMode }) => {
   const navPadding = '2px 8px';
   const navMinWidth = '80px';
 
-  const spacerHeight = isMobile ? 120 : STICKY_HEIGHT;
+  const spacerHeight = isMobile ? 102 : STICKY_HEIGHT;
 
   return (
     <>
@@ -137,85 +137,47 @@ const Header = ({ darkMode, setDarkMode }) => {
 
       {isMobile ? (
         <header className="fixed top-0 left-0 right-0 bg-white border-b z-[9999]" style={{ borderColor: '#B59B8E' }}>
-          <div className="p-4">
-            <div className="flex items-center gap-3 mb-3">
+          <div className="px-4 pt-1.5 pb-0">
+            <div className="flex items-center justify-between h-[60px]">
               <Link to="/">
-                <img src="/images/Logo.png" alt="Logo" style={{ width: 60, height: 30, objectFit: 'contain' }} />
+                <img src="/images/Logo.png" alt="Logo" style={{ width: 56, height: 56, objectFit: 'contain' }} />
               </Link>
 
-              <div className="flex-1 relative">
-                <input
-                  readOnly
-                  onFocus={() => setSearchOpen(true)}
-                  placeholder="Search For Perfume"
-                  className="w-full pl-10 pr-4 py-2.5 border-2 focus:outline-none"
-                  style={{
-                    fontFamily: 'Playfair Display, serif',
-                    fontSize: '13px',
-                    fontWeight: '500',
-                    borderRadius: '10px',
-                    borderColor: '#8B6F47',
-                    color: '#6b3f2a',
-                    backgroundColor: '#FFFFFF'
-                  }}
-                />
-                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2" size={18} style={{ color: '#8B6F47' }} />
-              </div>
-
-              <div className="flex gap-3">
-                <Link to="/wishlist-collection"><FiHeart size={22} color="#341405" /></Link>
-                <button onClick={() => setIsCartOpen(true)}><FiShoppingCart size={22} color="#341405" /></button>
+              <div className="flex items-center gap-2.5">
+                <Link to="/wishlist-collection" aria-label="Wishlist"><FiHeart size={16} color="#281507" /></Link>
+                <button onClick={() => setIsCartOpen(true)} aria-label="Cart"><FiShoppingCart size={16} color="#281507" /></button>
                 {user ? (
-                  <button onClick={() => setIsUserDropdownOpen(v => !v)}>
+                  <button onClick={() => setIsUserDropdownOpen(v => !v)} aria-label="Account">
                     <div className="w-6 h-6 rounded-full bg-[#341405] text-white flex items-center justify-center text-xs">
                       {(user.username || user.email)[0].toUpperCase()}
                     </div>
                   </button>
                 ) : (
-                  <button onClick={() => setIsSignupOpen(true)}><FiUser size={22} color="#341405" /></button>
+                  <button onClick={() => setIsSignupOpen(true)} aria-label="Sign in"><FiUser size={16} color="#281507" /></button>
                 )}
               </div>
             </div>
 
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-              <button
-                onClick={() => navigate('/')}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg whitespace-nowrap flex-shrink-0"
-                style={{
-                  border: '1.5px solid #8B6F47',
-                  backgroundColor: '#F5F3F0',
-                  color: '#6b3f2a',
-                  fontFamily: 'Playfair Display, serif',
-                  fontSize: '13px',
-                  fontWeight: '500',
-                  letterSpacing: '1.2px'
-                }}
-              >
-                <FiHome size={16} color="#6b3f2a" />
-                HOME
-              </button>
-
-              {navItems.slice(1).map(item => {
-                const active = isActiveNavItem(item.path);
-                return (
+            <div className="h-10 py-2 flex justify-between items-center border-t border-[#E5E1DB]">
+              <div className="flex items-center gap-6 overflow-x-auto scrollbar-hide whitespace-nowrap text-[#52250F]">
+                {navItems.slice(1).map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className="px-4 py-2.5 rounded-lg whitespace-nowrap flex-shrink-0 text-center"
-                    style={{
-                      fontFamily: 'Playfair Display, serif',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      letterSpacing: '1.2px',
-                      color: '#6b3f2a',
-                      backgroundColor: active ? '#E8D4A0' : '#F5F3F0',
-                      border: '1.5px solid #8B6F47'
-                    }}
+                    className="text-base font-normal leading-6"
+                    style={{ fontFamily: 'DM Sans, sans-serif' }}
                   >
-                    {item.label.replace("'S SCENTS", "'S").replace(" SCENTS", "")}
+                    {item.label.replace("'S SCENTS", '').replace(' SCENTS', '').replace("'", '')}
                   </Link>
-                );
-              })}
+                ))}
+              </div>
+              <button
+                onClick={toggleMenu}
+                className="w-6 h-6 flex items-center justify-center text-[#52250F]"
+                aria-label="Open menu"
+              >
+                <FiMenu size={18} />
+              </button>
             </div>
           </div>
         </header>
